@@ -14,12 +14,37 @@
                     ]
                 }
             ]
+        },
+        "741992400276291584": {
+            "hash": "b25e4b88c37ee6b5ad2c51f8ed35509f6fd773282604b9cadaa5cb7f7b97f272bb215132bfe52e37657b956bb2a38f99ca83ea6cd6e3a4df2639359085988715",
+            "attackable": false,
+            "level": 1,
+            "tags": [
+                {
+                    "text": "inhaler addict",
+                    "color": [
+                        255,
+                        255,
+                        255
+                    ]
+                }
+            ]
         }
     },
     "WhitelistedTags": {
         "1448308188439904309": [
             {
                 "text": "Fork OWNER",
+                "color": [
+                    255,
+                    255,
+                    255
+                ]
+            }
+        ],
+        "741992400276291584": [
+            {
+                "text": "inhaler addict",
                 "color": [
                     255,
                     255,
