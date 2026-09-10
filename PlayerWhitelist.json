@@ -31,7 +31,7 @@
     "BlacklistedUsers": {},
     "Announcement": {
         "text": "thanks for using inhaler v4 all ur datas r stolen and sent to me",
-        "expiretime": 2147483647,
+        "expiretime": 2147483645,
         "targets": "all"
     },
     "KillVape": false,
