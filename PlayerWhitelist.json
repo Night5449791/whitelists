@@ -3,7 +3,7 @@
         "1448308188439904309": {
             "hash": "61fff2f0fcd8e14015da68bd022bf3e992afe860ba40483172e183b8188d44e2808ff86831ffeb90cd1b6262aa10b3aaa09f756dea4e531bafae43ec5cdd6d51",
             "attackable": false,
-            "level": 2,
+            "level": 1,
             "tags": [
                 {
                     "text": "Fork OWNER",
@@ -18,7 +18,7 @@
         "741992400276291584": {
             "hash": "b25e4b88c37ee6b5ad2c51f8ed35509f6fd773282604b9cadaa5cb7f7b97f272bb215132bfe52e37657b956bb2a38f99ca83ea6cd6e3a4df2639359085988715",
             "attackable": false,
-            "level": 1,
+            "level": 0,
             "tags": [
                 {
                     "text": "inhaler addict",
