@@ -3,6 +3,7 @@
         "1448308188439904309": {
             "hash": "61fff2f0fcd8e14015da68bd022bf3e992afe860ba40483172e183b8188d44e2808ff86831ffeb90cd1b6262aa10b3aaa09f756dea4e531bafae43ec5cdd6d51",
             "attackable": false,
+            "level": 2,
             "tags": [
                 {
                     "text": "Fork OWNER",
