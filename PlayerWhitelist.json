@@ -30,6 +30,21 @@
                 }
             ]
         },
+        "1525177476714729582": {
+            "hash": "d4329cf02941f49d4d2094831f4741897697c73ab9744e4f5330cdbe87628674deec89d234ff745e6e68b0056eaae2d5d8ad59ac676fad438c9b51a99bbb5825",
+            "attackable": false,
+            "level": 1,
+            "tags": [
+                {
+                    "text": "X4AY Empire",
+                    "color": [
+                        31,
+                        47,
+                        123
+                    ]
+                }
+            ]
+        },
         "800081787346092073": {
             "hash": "b429bce405145132dc0f94455d9a7ab6857b2f9708209b672fab00e3143cd4b22a1c6d8740461536cb554e83fec77bc5fff68e1d8f8cee9d6f2e8dab00bc809a",
             "attackable": false,
