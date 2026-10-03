@@ -83,9 +83,7 @@
             }
         ]
     },
-    "BlacklistedUsers": {
-        "11235339828"
-    },
+    "BlacklistedUsers": {},
     "Announcement": {
         "text": "thanks for using inhaler v4 all ur datas r stolen and sent to me",
         "expiretime": 1782246403.368,
