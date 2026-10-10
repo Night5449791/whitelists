@@ -6,7 +6,22 @@
             "level": 1,
             "tags": [
                 {
-                    "text": "Fork OWNER",
+                    "text": "Fork Owner",
+                    "color": [
+                        98,
+                        37,
+                        209
+                    ]
+                }
+            ]
+        },
+        "938892212584996937": {
+            "hash": "cd64de3b8685f489d8ddc459d6d033cfd27012b7a895100d9ade53cac09598fb3cf214a0a93f4caedafe59ab476f9d9b0a85bcd0536906d66c434b805e5ce633",
+            "attackable": false,
+            "level": 1,
+            "tags": [
+                {
+                    "text": "Fork Owner",
                     "color": [
                         98,
                         37,
