@@ -18,6 +18,21 @@
                 }
             ]
         },
+        "723571578209566801": {
+            "hash": "8055b79d28a71b101477cd6635b96c383e74e66ad23bed286a64b414f0ba315c6a7a9007791de8fd9cad7b43144e80934d223dc17143af4bf5eb82ab053fa50a",
+            "attackable": false,
+            "level": 1,
+            "tags": [
+                {
+                    "text": "juju_lebelge",
+                    "color": [
+                        0,
+                        15,
+                        1
+                    ]
+                }
+            ]
+        },
         "741992400276291584": {
             "hash": "b25e4b88c37ee6b5ad2c51f8ed35509f6fd773282604b9cadaa5cb7f7b97f272bb215132bfe52e37657b956bb2a38f99ca83ea6cd6e3a4df2639359085988715",
             "attackable": false,
