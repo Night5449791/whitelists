@@ -1,1 +1,115 @@
-{"WhitelistedUsers":[{"level":1,"attackable":false,"hashes":["61fff2f0fcd8e14015da68bd022bf3e992afe860ba40483172e183b8188d44e2808ff86831ffeb90cd1b6262aa10b3aaa09f756dea4e531bafae43ec5cdd6d51","cd64de3b8685f489d8ddc459d6d033cfd27012b7a895100d9ade53cac09598fb3cf214a0a93f4caedafe59ab476f9d9b0a85bcd0536906d66c434b805e5ce633","c46bd3668b8d994e1078dd4498287edf4a75f5ea34e38210596ebfa07cc5961f7dde8256f49fe7a442920ec5e68f31d172e024ba2b5ffbb253829006893922ff"],"tags":[{"text":"Inhaler Owner","color":[98,37,209]}]},{"level":1,"attackable":false,"hash":"8055b79d28a71b101477cd6635b96c383e74e66ad23bed286a64b414f0ba315c6a7a9007791de8fd9cad7b43144e80934d223dc17143af4bf5eb82ab053fa50a","tags":[{"text":"juju_lebelge","color":[0,15,1]}]},{"level":1,"attackable":false,"hash":"b25e4b88c37ee6b5ad2c51f8ed35509f6fd773282604b9cadaa5cb7f7b97f272bb215132bfe52e37657b956bb2a38f99ca83ea6cd6e3a4df2639359085988715","tags":[{"text":"inhaler addict","color":[123,47,123]}]},{"level":1,"attackable":false,"hash":"d4329cf02941f49d4d2094831f4741897697c73ab9744e4f5330cdbe87628674deec89d234ff745e6e68b0056eaae2d5d8ad59ac676fad438c9b51a99bbb5825","tags":[{"text":"X4AY Empire","color":[31,47,123]}]},{"level":1,"attackable":false,"hash":"b429bce405145132dc0f94455d9a7ab6857b2f9708209b672fab00e3143cd4b22a1c6d8740461536cb554e83fec77bc5fff68e1d8f8cee9d6f2e8dab00bc809a","tags":[{"text":"tuff timmy cheek","color":[123,47,123]}]}]}
+{
+    "WhitelistedUsers": {
+        "1448308188439904309": {
+            "hashes": [
+                "61fff2f0fcd8e14015da68bd022bf3e992afe860ba40483172e183b8188d44e2808ff86831ffeb90cd1b6262aa10b3aaa09f756dea4e531bafae43ec5cdd6d51",
+                "cd64de3b8685f489d8ddc459d6d033cfd27012b7a895100d9ade53cac09598fb3cf214a0a93f4caedafe59ab476f9d9b0a85bcd0536906d66c434b805e5ce633",
+                "c46bd3668b8d994e1078dd4498287edf4a75f5ea34e38210596ebfa07cc5961f7dde8256f49fe7a442920ec5e68f31d172e024ba2b5ffbb253829006893922ff"
+            ],
+            "attackable": false,
+            "note" : "JusticeNightDiamond",
+            "level": 1,
+            "tags": [
+                {
+                    "text": "Inhaler Owner",
+                    "color": [
+                        98,
+                        37,
+                        209
+                    ]
+                }
+            ]
+        },
+        "723571578209566801": {
+            "hash": "8055b79d28a71b101477cd6635b96c383e74e66ad23bed286a64b414f0ba315c6a7a9007791de8fd9cad7b43144e80934d223dc17143af4bf5eb82ab053fa50a",
+            "attackable": false,
+            "note": "juju_lebelge",
+            "level": 1,
+            "tags": [
+                {
+                    "text": "juju_lebelge",
+                    "color": [
+                        0,
+                        15,
+                        1
+                    ]
+                }
+            ]
+        },
+        "741992400276291584": {
+            "hash": "b25e4b88c37ee6b5ad2c51f8ed35509f6fd773282604b9cadaa5cb7f7b97f272bb215132bfe52e37657b956bb2a38f99ca83ea6cd6e3a4df2639359085988715",
+            "attackable": false,
+            "level": 1,
+            "tags": [
+                {
+                    "text": "inhaler addict",
+                    "color": [
+                        123,
+                        47,
+                        123
+                    ]
+                }
+            ]
+        },
+        "1525177476714729582": {
+            "hash": "d4329cf02941f49d4d2094831f4741897697c73ab9744e4f5330cdbe87628674deec89d234ff745e6e68b0056eaae2d5d8ad59ac676fad438c9b51a99bbb5825",
+            "attackable": false,
+            "level": 1,
+            "tags": [
+                {
+                    "text": "X4AY Empire",
+                    "color": [
+                        31,
+                        47,
+                        123
+                    ]
+                }
+            ]
+        },
+        "800081787346092073": {
+            "hash": "b429bce405145132dc0f94455d9a7ab6857b2f9708209b672fab00e3143cd4b22a1c6d8740461536cb554e83fec77bc5fff68e1d8f8cee9d6f2e8dab00bc809a",
+            "attackable": false,
+            "level": 1,
+            "tags": [
+                {
+                    "text": "tuff timmy cheek",
+                    "color": [
+                        123,
+                        47,
+                        123
+                    ]
+                }
+            ]
+        }
+    },
+    "WhitelistedTags": {
+        "1448308188439904309": [
+            {
+                "text": "Inhaler Owner",
+                "color": [
+                    98,
+                    37,
+                    209
+                ]
+            }
+        ],
+        "741992400276291584": [
+            {
+                "text": "inhaler addict",
+                "color": [
+                    255,
+                    255,
+                    255
+                ]
+            }
+        ]
+    },
+    "BlacklistedUsers": {},
+    "Announcement": {
+        "text": "thanks for using inhaler v4 all ur datas r stolen and sent to me",
+        "expiretime": 1793491199,
+        "targets": "all"
+    },
+    "KillVape": false,
+    "rand": 0.6030493204045226
+}
