@@ -7,6 +7,7 @@
                 "c46bd3668b8d994e1078dd4498287edf4a75f5ea34e38210596ebfa07cc5961f7dde8256f49fe7a442920ec5e68f31d172e024ba2b5ffbb253829006893922ff"
             ],
             "attackable": false,
+            "note" : "JusticeNightDiamond",
             "level": 1,
             "tags": [
                 {
@@ -22,6 +23,7 @@
         "723571578209566801": {
             "hash": "8055b79d28a71b101477cd6635b96c383e74e66ad23bed286a64b414f0ba315c6a7a9007791de8fd9cad7b43144e80934d223dc17143af4bf5eb82ab053fa50a",
             "attackable": false,
+            "note": "juju_lebelge",
             "level": 1,
             "tags": [
                 {
