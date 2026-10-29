@@ -1,12 +1,5 @@
 {
   "WhitelistedUsers": {
-    "999999997": {
-      "hash": "3574933b72343fccf3bfed69b8fa3a1a6e662fd39c7af4d40c70f94418d2ca13a0604526a65fbe7f8e6bde09f6150d79f79ec221cbf6d3eec907816bb5a2bb99",
-      "attackable": false,
-      "note": "zzwstest",
-      "level": 0,
-      "userId": "999999997"
-    },
     "999999998": {
       "hash": "2ec66d602326729c36e86c222bf12503640654d461b94d9202d3bb944ce2052ea073342d2067cc33b37690a68a67c82dc85b623285cc0069e31ccd4f6edf1d6c",
       "attackable": false,
