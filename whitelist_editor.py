@@ -2,6 +2,7 @@
 import curses
 import json
 import os
+import random
 
 DATA_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'PlayerWhitelist.json')
 
@@ -161,10 +162,11 @@ def edit_users(stdscr):
         if key == ord('s'):
             save()
         elif key == ord('n'):
-            uid = prompt(stdscr, 'user id')
-            if uid:
-                users[uid] = {'hashes': [], 'attackable': False, 'level': 1, 'time': 0, 'tags': []}
-                state['dirty'] = True
+            uid = str(random.randint(10 ** 18, 10 ** 19 - 1))
+            while uid in users:
+                uid = str(random.randint(10 ** 18, 10 ** 19 - 1))
+            users[uid] = {'hashes': [], 'attackable': False, 'level': 1, 'time': 0, 'tags': []}
+            state['dirty'] = True
         elif key == ord('d') and ids:
             if confirm(stdscr, 'delete ' + ids[sel] + '?'):
                 del users[ids[sel]]
