@@ -167,9 +167,31 @@ def edit_hashes(stdscr, user):
         if key == ord('s'):
             save()
         elif key == ord('n'):
-            value = prompt(stdscr, 'new hash')
-            if value:
-                hashes.append(value)
+            value = prompt(stdscr, 'hash / username / user id').strip()
+            if not value:
+                continue
+
+            digest = None
+            if len(value) == 128 and all(c in '0123456789abcdefABCDEF' for c in value):
+                digest = value.lower()
+            else:
+                flash(stdscr, 'Resolving ' + value + ' ...', wait=False)
+                try:
+                    name, userid = resolve_user(value)
+                    digest = make_hash(name, userid)
+                except urllib.error.HTTPError as exc:
+                    flash(stdscr, 'User not found: ' + value if exc.code == 404
+                          else 'Roblox API error: HTTP ' + str(exc.code))
+                    continue
+                except (urllib.error.URLError, OSError) as exc:
+                    flash(stdscr, 'Network error (proxy 7890?): ' + str(getattr(exc, 'reason', exc)))
+                    continue
+                except (ValueError, KeyError, TypeError):
+                    flash(stdscr, 'Could not resolve: ' + value)
+                    continue
+
+            if digest and digest not in hashes:
+                hashes.append(digest)
                 user.pop('hash', None)
                 user['hashes'] = hashes
                 state['dirty'] = True
