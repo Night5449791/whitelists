@@ -1,10 +1,18 @@
 #!/usr/bin/env python3
 import curses
+import hashlib
 import json
 import os
 import random
+import time
+import urllib.error
+import urllib.request
 
 DATA_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'PlayerWhitelist.json')
+PROXY = 'http://127.0.0.1:7890'
+_opener = urllib.request.build_opener(
+    urllib.request.ProxyHandler({'http': PROXY, 'https': PROXY})
+)
 
 with open(DATA_FILE, 'r', encoding='utf-8') as f:
     data = json.load(f)
@@ -37,6 +45,81 @@ def prompt(stdscr, text, default=''):
 
 def confirm(stdscr, text):
     return prompt(stdscr, text + ' (y/N)', 'n').lower().startswith('y')
+
+
+def flash(stdscr, text, wait=True):
+    h, w = stdscr.getmaxyx()
+    stdscr.addnstr(h - 1, 0, ' ' * (w - 1), w - 1, curses.A_REVERSE)
+    stdscr.addnstr(h - 1, 0, text[:w - 1], w - 1, curses.A_REVERSE)
+    stdscr.refresh()
+    if wait:
+        stdscr.getch()
+
+
+def resolve_user(value):
+    value = value.strip()
+    if value.isdigit():
+        req = urllib.request.Request(
+            'https://users.roblox.com/v1/users/' + value,
+            headers={'User-Agent': 'Mozilla/5.0'}
+        )
+        with _opener.open(req, timeout=10) as resp:
+            info = json.load(resp)
+        return str(info['name']), int(info['id'])
+
+    body = json.dumps({'usernames': [value], 'excludeBannedUsers': True}).encode('utf-8')
+    req = urllib.request.Request(
+        'https://users.roblox.com/v1/usernames/users',
+        data=body,
+        headers={'Content-Type': 'application/json', 'User-Agent': 'Mozilla/5.0'},
+        method='POST'
+    )
+    with _opener.open(req, timeout=10) as resp:
+        result = json.load(resp)
+    found = result.get('data') or []
+    if not found:
+        raise ValueError('user not found')
+    return str(found[0]['name']), int(found[0]['id'])
+
+
+def make_hash(name, userid):
+    return hashlib.sha512((name + str(userid) + 'SelfReport').encode('utf-8')).hexdigest()
+
+
+def auto_add_user(stdscr):
+    users = data.setdefault('WhitelistedUsers', {})
+    value = prompt(stdscr, 'username or user id').strip()
+    if not value:
+        return
+
+    flash(stdscr, 'Resolving ' + value + ' ...', wait=False)
+    try:
+        name, userid = resolve_user(value)
+    except urllib.error.HTTPError as exc:
+        flash(stdscr, 'User not found: ' + value if exc.code == 404
+              else 'Roblox API error: HTTP ' + str(exc.code))
+        return
+    except (urllib.error.URLError, OSError) as exc:
+        flash(stdscr, 'Network error (proxy 7890?): ' + str(getattr(exc, 'reason', exc)))
+        return
+    except (ValueError, KeyError, TypeError):
+        flash(stdscr, 'Could not resolve: ' + value)
+        return
+
+    uid = str(random.randint(10 ** 18, 10 ** 19 - 1))
+    while uid in users:
+        uid = str(random.randint(10 ** 18, 10 ** 19 - 1))
+
+    digest = make_hash(name, userid)
+    users[uid] = {
+        'hashes': [digest],
+        'attackable': False,
+        'level': 1,
+        'time': int(time.time()),
+        'tags': []
+    }
+    state['dirty'] = True
+    flash(stdscr, 'Added ' + name + ' (' + str(userid) + ') -> ' + digest)
 
 
 def draw_menu(stdscr, title, items, selected, info=None):
@@ -156,11 +239,13 @@ def edit_users(stdscr):
     sel = 0
     while True:
         ids = list(users.keys())
-        key, sel = scroll_list(stdscr, 'WHITELISTED USERS', ids, 'enter edit, n new, d delete, q back', sel)
+        key, sel = scroll_list(stdscr, 'WHITELISTED USERS', ids, 'enter edit, n new, a auto-add, d delete, q back', sel)
         if key in (ord('q'), 27):
             return
         if key == ord('s'):
             save()
+        elif key == ord('a'):
+            auto_add_user(stdscr)
         elif key == ord('n'):
             uid = str(random.randint(10 ** 18, 10 ** 19 - 1))
             while uid in users:
