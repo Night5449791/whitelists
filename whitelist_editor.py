@@ -2,7 +2,6 @@
 import curses
 import json
 import os
-import sys
 
 DATA_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'PlayerWhitelist.json')
 
@@ -22,14 +21,13 @@ def save():
 def prompt(stdscr, text, default=''):
     curses.curs_set(1)
     h, w = stdscr.getmaxyx()
-    stdscr.attron(curses.A_REVERSE)
-    stdscr.addnstr(h - 1, 0, ' ' * (w - 1), w - 1)
-    stdscr.attroff(curses.A_REVERSE)
-    stdscr.addnstr(h - 1, 0, (text + ((' [' + default + ']') if default else '') + ': ')[:w - 1], w - 1)
+    hint = text + ((' [' + default + ']') if default else '') + ': '
+    stdscr.addnstr(h - 1, 0, ' ' * (w - 1), w - 1, curses.A_REVERSE)
+    stdscr.addnstr(h - 1, 0, hint[:w - 1], w - 1, curses.A_REVERSE)
     stdscr.refresh()
     curses.echo()
     try:
-        value = stdscr.getstr(h - 1, len(text + ((' [' + default + ']') if default else '') + ': '), 200).decode('utf-8')
+        value = stdscr.getstr(h - 1, len(hint), 200).decode('utf-8')
     finally:
         curses.noecho()
         curses.curs_set(0)
@@ -48,29 +46,23 @@ def draw_menu(stdscr, title, items, selected, info=None):
         stdscr.addnstr(1, 0, info, w - 1, curses.A_DIM)
     start = max(0, selected - (h - 4))
     for i in range(start, min(len(items), start + h - 3)):
-        line = str(items[i])
         marker = '> ' if i == selected else '  '
         attr = curses.A_REVERSE if i == selected else curses.A_NORMAL
-        stdscr.addnstr(i - start + 3, 0, (marker + line)[:w - 1], w - 1, attr)
-    stdscr.addnstr(h - 2, 0, '[up/down] move  [enter] select  [n] new  [d] delete  [s] save  [q] back', w - 1, curses.A_DIM)
+        stdscr.addnstr(i - start + 3, 0, (marker + str(items[i]))[:w - 1], w - 1, attr)
+    stdscr.addnstr(h - 2, 0, '[up/down] move  [enter] edit  [n] new  [d] delete  [s] save  [q] back', w - 1, curses.A_DIM)
     stdscr.refresh()
 
 
-def scroll_list(stdscr, title, items, info=None, allow_edit=True):
-    sel = 0
+def scroll_list(stdscr, title, items, info=None, selected=0):
     while True:
-        draw_menu(stdscr, title, items, sel, info)
+        draw_menu(stdscr, title, items, selected, info)
         key = stdscr.getch()
-        if key in (ord('q'), 27):
-            return None
-        elif key == curses.KEY_UP:
-            sel = max(0, sel - 1)
+        if key == curses.KEY_UP:
+            selected = max(0, selected - 1)
         elif key == curses.KEY_DOWN:
-            sel = min(len(items) - 1, sel + 1) if items else 0
-        elif key in (10, 13) and items and allow_edit:
-            return sel
-        elif key == ord('s'):
-            save()
+            selected = min(len(items) - 1, selected + 1) if items else 0
+        else:
+            return key, selected
 
 
 def edit_value(stdscr, label, value, cast=str):
@@ -81,7 +73,54 @@ def edit_value(stdscr, label, value, cast=str):
         return value
 
 
+def edit_hashes(stdscr, user):
+    hashes = user.get('hashes') or ([user['hash']] if 'hash' in user else [])
+    sel = 0
+    while True:
+        key, sel = scroll_list(stdscr, 'HASHES', hashes, 'n add, d delete, q back', sel)
+        if key in (ord('q'), 27):
+            break
+        if key == ord('s'):
+            save()
+        elif key == ord('n'):
+            value = prompt(stdscr, 'new hash')
+            if value:
+                hashes.append(value)
+                user.pop('hash', None)
+                user['hashes'] = hashes
+                state['dirty'] = True
+        elif key == ord('d') and hashes:
+            del hashes[sel]
+            user['hashes'] = hashes
+            state['dirty'] = True
+
+
+def edit_tags(stdscr, tags):
+    sel = 0
+    while True:
+        labels = [t.get('text', '') + ' ' + str(t.get('color', [])) for t in tags]
+        key, sel = scroll_list(stdscr, 'TAGS', labels, 'n add, d delete, q back', sel)
+        if key in (ord('q'), 27):
+            break
+        if key == ord('s'):
+            save()
+        elif key == ord('n'):
+            text = prompt(stdscr, 'tag text')
+            color_raw = prompt(stdscr, 'color r,g,b', '255,255,255')
+            try:
+                color = [int(x.strip()) for x in color_raw.split(',')][:3]
+            except ValueError:
+                color = [255, 255, 255]
+            if text:
+                tags.append({'text': text, 'color': color})
+                state['dirty'] = True
+        elif key == ord('d') and tags:
+            del tags[sel]
+            state['dirty'] = True
+
+
 def edit_user(stdscr, user_id, user):
+    sel = 0
     while True:
         hashes = user.get('hashes') or ([user['hash']] if 'hash' in user else [])
         lines = [
@@ -92,71 +131,36 @@ def edit_user(stdscr, user_id, user):
             'Hashes: ' + str(len(hashes)),
             'Tags: ' + str(len(user.get('tags', []))),
         ]
-        sel = scroll_list(stdscr, 'EDIT USER', lines, 'enter to edit, q to go back')
-        if sel is None:
+        key, sel = scroll_list(stdscr, 'EDIT USER', lines, 'enter edit, q back', sel)
+        if key in (ord('q'), 27):
             return
-        if sel == 1:
-            user['level'] = edit_value(stdscr, 'level', user.get('level', 1), int)
-        elif sel == 2:
-            user['attackable'] = not user.get('attackable', False)
-        elif sel == 3:
-            user['note'] = prompt(stdscr, 'note', user.get('note', ''))
-        elif sel == 4:
-            edit_hashes(stdscr, user)
-        elif sel == 5:
-            edit_tags(stdscr, user.get('tags', []))
-        state['dirty'] = True
-
-
-def edit_hashes(stdscr, user):
-    hashes = user.get('hashes') or ([user['hash']] if 'hash' in user else [])
-    while True:
-        sel = scroll_list(stdscr, 'HASHES', hashes, 'n add, d delete, q back', allow_edit=False)
-        if sel is None:
-            break
-        key = stdscr.getch()
-        if key == ord('n'):
-            h = prompt(stdscr, 'new hash')
-            if h:
-                hashes.append(h)
-                user.pop('hash', None)
-                user['hashes'] = hashes
-        elif key == ord('d') and hashes:
-            del hashes[sel]
-            user['hashes'] = hashes
-        elif key == ord('s'):
-            pass
-
-
-def edit_tags(stdscr, tags):
-    while True:
-        labels = [t.get('text', '') + ' ' + str(t.get('color', [])) for t in tags]
-        sel = scroll_list(stdscr, 'TAGS', labels, 'n add, d delete, q back', allow_edit=False)
-        if sel is None:
-            break
-        key = stdscr.getch()
-        if key == ord('n'):
-            text = prompt(stdscr, 'tag text')
-            color_raw = prompt(stdscr, 'color r,g,b', '255,255,255')
-            try:
-                color = [int(x.strip()) for x in color_raw.split(',')][:3]
-            except ValueError:
-                color = [255, 255, 255]
-            if text:
-                tags.append({'text': text, 'color': color})
-        elif key == ord('d') and tags:
-            del tags[sel]
+        if key == ord('s'):
+            save()
+        elif key in (10, 13):
+            if sel == 1:
+                user['level'] = edit_value(stdscr, 'level', user.get('level', 1), int)
+            elif sel == 2:
+                user['attackable'] = not user.get('attackable', False)
+            elif sel == 3:
+                user['note'] = prompt(stdscr, 'note', user.get('note', ''))
+            elif sel == 4:
+                edit_hashes(stdscr, user)
+            elif sel == 5:
+                edit_tags(stdscr, user.setdefault('tags', []))
+            state['dirty'] = True
 
 
 def edit_users(stdscr):
     users = data.setdefault('WhitelistedUsers', {})
+    sel = 0
     while True:
         ids = list(users.keys())
-        sel = scroll_list(stdscr, 'WHITELISTED USERS', ids, 'enter edit, n new, d delete, q back', allow_edit=True)
-        if sel is None:
-            break
-        key = stdscr.getch()
-        if key == ord('n'):
+        key, sel = scroll_list(stdscr, 'WHITELISTED USERS', ids, 'enter edit, n new, d delete, q back', sel)
+        if key in (ord('q'), 27):
+            return
+        if key == ord('s'):
+            save()
+        elif key == ord('n'):
             uid = prompt(stdscr, 'user id')
             if uid:
                 users[uid] = {'hashes': [], 'attackable': False, 'level': 1, 'time': 0, 'tags': []}
@@ -165,20 +169,21 @@ def edit_users(stdscr):
             if confirm(stdscr, 'delete ' + ids[sel] + '?'):
                 del users[ids[sel]]
                 state['dirty'] = True
-        elif sel is not None:
+        elif key in (10, 13) and ids:
             edit_user(stdscr, ids[sel], users[ids[sel]])
-            state['dirty'] = True
 
 
 def edit_tag_users(stdscr):
     section = data.setdefault('WhitelistedTags', {})
+    sel = 0
     while True:
         ids = list(section.keys())
-        sel = scroll_list(stdscr, 'WHITELISTED TAGS', ids, 'q back', allow_edit=False)
-        if sel is None:
-            break
-        key = stdscr.getch()
-        if key == ord('n'):
+        key, sel = scroll_list(stdscr, 'WHITELISTED TAGS', ids, 'enter edit, n new, d delete, q back', sel)
+        if key in (ord('q'), 27):
+            return
+        if key == ord('s'):
+            save()
+        elif key == ord('n'):
             uid = prompt(stdscr, 'user id')
             if uid:
                 section[uid] = []
@@ -188,20 +193,22 @@ def edit_tag_users(stdscr):
                 del section[ids[sel]]
                 state['dirty'] = True
         elif key in (10, 13) and ids:
-            edit_tags(stdscr, section[ids[sel]])
+            edit_tags(stdscr, section.setdefault(ids[sel], []))
             state['dirty'] = True
 
 
 def edit_blacklist(stdscr):
     section = data.setdefault('BlacklistedUsers', {})
+    sel = 0
     while True:
         ids = list(section.keys())
         items = [i + ': ' + str(section[i]) for i in ids]
-        sel = scroll_list(stdscr, 'BLACKLISTED USERS', items, 'n new, d delete, q back', allow_edit=False)
-        if sel is None:
-            break
-        key = stdscr.getch()
-        if key == ord('n'):
+        key, sel = scroll_list(stdscr, 'BLACKLISTED USERS', items, 'enter edit, n new, d delete, q back', sel)
+        if key in (ord('q'), 27):
+            return
+        if key == ord('s'):
+            save()
+        elif key == ord('n'):
             uid = prompt(stdscr, 'user id')
             reason = prompt(stdscr, 'reason')
             if uid:
@@ -218,20 +225,26 @@ def edit_blacklist(stdscr):
 
 def edit_announcement(stdscr):
     ann = data.setdefault('Announcement', {})
-    lines = [
-        'Text: ' + str(ann.get('text', '')),
-        'Expire time: ' + str(ann.get('expiretime', 0)),
-        'Targets: ' + str(ann.get('targets', 'all')),
-    ]
-    sel = scroll_list(stdscr, 'ANNOUNCEMENT', lines, 'enter edit, q back')
-    if sel == 0:
-        ann['text'] = prompt(stdscr, 'text', ann.get('text', ''))
-    elif sel == 1:
-        ann['expiretime'] = edit_value(stdscr, 'expiretime', ann.get('expiretime', 0), int)
-    elif sel == 2:
-        ann['targets'] = prompt(stdscr, 'targets', ann.get('targets', 'all'))
-    if sel is not None:
-        state['dirty'] = True
+    sel = 0
+    while True:
+        lines = [
+            'Text: ' + str(ann.get('text', '')),
+            'Expire time: ' + str(ann.get('expiretime', 0)),
+            'Targets: ' + str(ann.get('targets', 'all')),
+        ]
+        key, sel = scroll_list(stdscr, 'ANNOUNCEMENT', lines, 'enter edit, q back', sel)
+        if key in (ord('q'), 27):
+            return
+        if key == ord('s'):
+            save()
+        elif key in (10, 13):
+            if sel == 0:
+                ann['text'] = prompt(stdscr, 'text', ann.get('text', ''))
+            elif sel == 1:
+                ann['expiretime'] = edit_value(stdscr, 'expiretime', ann.get('expiretime', 0), int)
+            elif sel == 2:
+                ann['targets'] = prompt(stdscr, 'targets', ann.get('targets', 'all'))
+            state['dirty'] = True
 
 
 def main(stdscr):
@@ -243,23 +256,11 @@ def main(stdscr):
         lines = []
         for name in sections:
             val = data.get(name)
-            if name == 'KillVape':
-                lines.append(name + ' = ' + str(val))
-            elif name == 'rand':
-                lines.append(name + ' = ' + str(val))
-            else:
-                lines.append(name + ' (' + str(len(val)) + ' entries)')
-        draw_menu(stdscr, 'INHALER WHITELIST EDITOR', lines, sel, 'enter edit, s save, q quit')
-        key = stdscr.getch()
+            lines.append(name + ' = ' + str(val) if name in ('KillVape', 'rand') else name + ' (' + str(len(val)) + ' entries)')
+        key, sel = scroll_list(stdscr, 'INHALER WHITELIST EDITOR', lines, 'enter edit, s save, q quit', sel)
         if key in (ord('q'), 27):
-            if state['dirty'] and confirm(stdscr, 'unsaved changes, quit anyway?'):
+            if not state['dirty'] or confirm(stdscr, 'unsaved changes, quit anyway?'):
                 break
-            elif not state['dirty']:
-                break
-        elif key == curses.KEY_UP:
-            sel = max(0, sel - 1)
-        elif key == curses.KEY_DOWN:
-            sel = min(len(sections) - 1, sel + 1)
         elif key == ord('s'):
             save()
         elif key in (10, 13):
