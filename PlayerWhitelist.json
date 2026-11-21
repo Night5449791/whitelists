@@ -95,6 +95,16 @@
           ]
         }
       ]
+    },
+    "7515577019882814335": {
+      "hashes": [
+        "a596c4562aff3e13710872f1299364d9953ea0c5ec2ed367a28b802d3666b03ef8d63c30e490d7658a52ada8c9f1e73193d4a1b6aeb2c7f2ce5641b0b4bb2880"
+      ],
+      "attackable": false,
+      "level": 1,
+      "time": 0,
+      "tags": [],
+      "note": "Fellow Mimi"
     }
   },
   "WhitelistedTags": {
